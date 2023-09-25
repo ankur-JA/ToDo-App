@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo - App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .todo-item {
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .todo-item span {
+            flex: 1;
+        }
+
+        .delete-button {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 3px 8px; /* Adjust padding to make the button more compact */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .delete-button:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <script>
+       function deleteTD(id) {
+        fetch('http://127.0.0.1:3000/todos/'+id, {
+            method: "DELETE"
+        }).then((resp) => {
+        })
+        }
+
+
+        function getData() {
+            fetch('http://127.0.0.1:3000/todos', {
+                method: 'GET'
+        }).then((resp) => {
+            resp.json().then((data) => {
+                let parent = document.getElementById("mainAera");
+                for(let i=0;i<data.length;i++) {
+                    let childElemet = document.createElement('div');
+
+                    let grandChild1 = document.createElement('span');
+                    grandChild1.innerHTML = data[i].title;
+
+                    let grandChild2 = document.createElement('span');
+                    grandChild2.innerHTML = data[i].description;
+
+                    let grandChild3 = document.createElement('button');
+                    grandChild3.innerHTML = 'delete';
+                    grandChild3.setAttribute("onclick", "deleteTD("+data[i].id+")")
+
+                    childElemet.appendChild(grandChild1);
+                    childElemet.appendChild(grandChild2);
+                    childElemet.appendChild(grandChild3);
+
+                    parent.appendChild(childElemet);
+                }
+            })
+        })
+        }
+        getData();
+
+        function onPress() {
+            let title = document.getElementById('id1').value;
+            let description = document.getElementById('id2').value;
+
+            fetch('http://127.0.0.1:3000/todos', {
+                method: "POST",
+                body: JSON.stringify({
+                    title: title,
+                    description: description
+                }),
+                headers: {
+                   "Content-Type": "application/json"
+                } 
+            }).then((resp) => {
+                resp.json().then((data) => {
+                    console.log(data);
+                })
+            })
+        }
+    </script>
+    <center>
+        <h1>Todo - List</h1>
+        Title:
+        <input type="text" id="id1">
+        Description:
+        <input type="text" id="id2">
+        <button onclick="onPress()">Add Todo</button>
+        <br><br>
+        <div id="mainAera"></div>
+    </center>
+</body>
+</html>
